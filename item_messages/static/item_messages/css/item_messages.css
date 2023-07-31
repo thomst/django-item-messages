@@ -1,0 +1,73 @@
+/* message colors */
+:root {
+    --message-success-bg-light: #e8ffe8;
+    --message-warning-bg-light: #ffffe6;
+    --message-error-bg-light: #fff6f6;
+}
+
+/* Set standard background-color for messages and their notes. */
+tr:nth-child(odd) + .item-message,
+tr:nth-child(odd) + .item-message + .empty
+{
+    background: var(--body-bg);
+}
+tr:nth-child(even) + .item-message,
+tr:nth-child(even) + .item-message + .empty
+{
+    background: var(--darkened-bg);
+}
+
+/* Set message level specific background-color for the item rows, their messages
+and notes. */
+tr:nth-child(odd) + .item-message.info,
+tr:nth-child(odd) + .item-message.info + .empty,
+tr:nth-child(odd):has(+ .item-message.info)
+{
+    background: var(--message-success-bg-light);
+}
+tr:nth-child(even) + .item-message.info,
+tr:nth-child(even) + .item-message.info + .empty,
+tr:nth-child(even):has(+ .item-message.info)
+{
+    background: var(--message-success-bg);
+}
+tr:nth-child(odd) + .item-message.warning,
+tr:nth-child(odd) + .item-message.warning + .empty,
+tr:nth-child(odd):has(+ .item-message.warning)
+{
+    background: var(--message-warning-bg-light);
+}
+tr:nth-child(even) + .item-message.warning,
+tr:nth-child(even) + .item-message.warning + .empty,
+tr:nth-child(even):has(+ .item-message.warning)
+{
+    background: var(--message-warning-bg);
+}
+tr:nth-child(odd) + .item-message.error,
+tr:nth-child(odd) + .item-message.error + .empty,
+tr:nth-child(odd):has(+ .item-message.error)
+{
+    background: var(--message-error-bg-light);
+}
+tr:nth-child(even) + .item-message.error,
+tr:nth-child(even) + .item-message.error + .empty,
+tr:nth-child(even):has(+ .item-message.error)
+{
+    background: var(--message-error-bg);
+}
+
+/* Remove bottom border from items with a message and form the message row. */
+tr.item-message th,
+tr.item-message td,
+tr:has(+ .item-message) th,
+tr:has(+ .item-message) td
+{
+    border-bottom: 0;
+}
+
+/* Set padding to 0 for empty message notes. */
+tr.empty
+{
+    padding: 0;
+    border-bottom: 1px solid var(--hairline-color);
+}
