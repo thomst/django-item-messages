@@ -22,11 +22,11 @@ def add_message(request, level, obj, message, extra_tags=""):
     """
     try:
         messages = request._item_messages
-    except AttributeError:
+    except AttributeError as exc:
         raise MessageFailure(
             "You cannot add messages without installing "
             "django.contrib.messages.middleware.MessageMiddleware"
-        )
+        ) from exc
     else:
         return messages.add(level, obj, message, extra_tags)
 
@@ -37,11 +37,11 @@ def update_message(request, level, obj, message, extra_tags=""):
     """
     try:
         messages = request._item_messages
-    except AttributeError:
+    except AttributeError as exc:
         raise MessageFailure(
             "You cannot add messages without installing "
             "django.contrib.messages.middleware.MessageMiddleware"
-        )
+        ) from exc
     else:
         return messages.replace(level, obj, message, extra_tags)
 
