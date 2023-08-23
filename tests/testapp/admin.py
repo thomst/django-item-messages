@@ -1,8 +1,8 @@
 from django.contrib import admin
 from item_messages.api import add_message
 from item_messages.api import update_message
-from .models import TestModel
 from item_messages import INFO, ERROR
+from .models import TestModel
 
 
 @admin.register(TestModel)
