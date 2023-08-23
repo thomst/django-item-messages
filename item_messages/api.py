@@ -1,4 +1,5 @@
 from django.contrib.messages import constants
+from django.contrib.messages.api import MessageFailure
 from .storage import default_storage
 
 __all__ = (
@@ -13,10 +14,6 @@ __all__ = (
     "error",
     "MessageFailure",
 )
-
-
-class MessageFailure(Exception):
-    pass
 
 
 def add_message(request, level, obj, message, extra_tags=""):
