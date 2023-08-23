@@ -14,8 +14,11 @@ def create_test_data():
     TestModel.objects.all().delete()
 
     items = list()
-    for i in range(36):
-        item = TestModel(id=i)
+    for i in range(12):
+        item = TestModel()
+        item.one = 'one'
+        item.two = 'two'
+        item.three = 'three'
         item.save()
         items.append(item)
 
