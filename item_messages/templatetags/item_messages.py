@@ -33,7 +33,7 @@ def item_messages_result_list(context, cl):
         # Else we render the messages html and append it to the item list.
         else:
             for msg in obj_messages:
-                context = dict(colspan=len(item) - 1, msg=msg)
+                context = dict(colspan=len(item), msg=msg)
                 msg_html = render_to_string('item_messages/item_message.html', context)
 
                 # Extend the item and add it to our items list.
