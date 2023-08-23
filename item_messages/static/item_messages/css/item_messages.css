@@ -19,19 +19,23 @@ tr:nth-child(even) + .item-message + .empty
 }
 
 /* Set message level specific background-color for messages */
-tr:nth-child(odd) + .item-message.info > td > div
+tr:nth-child(odd) + .item-message.info > td > div,
+tr:nth-child(odd) + .item-message.success > td > div
 {
     background: var(--message-success-bg-light);
 }
-tr:nth-child(even) + .item-message.info > td > div
+tr:nth-child(even) + .item-message.info > td > div,
+tr:nth-child(even) + .item-message.success > td > div
 {
     background: var(--message-success-bg);
 }
-tr:nth-child(odd) + .item-message.warning > td > div
+tr:nth-child(odd) + .item-message.warning > td > div,
+tr:nth-child(odd) + .item-message.debug > td > div
 {
     background: var(--message-warning-bg-light);
 }
-tr:nth-child(even) + .item-message.warning > td > div
+tr:nth-child(even) + .item-message.warning > td > div,
+tr:nth-child(even) + .item-message.debug > td > div
 {
     background: var(--message-warning-bg);
 }
