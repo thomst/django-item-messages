@@ -31,7 +31,7 @@ def add_message(request, level, obj, message, extra_tags=""):
         return messages.add(level, obj, message, extra_tags)
 
 
-def update_message(request, level, obj, message, extra_tags=""):
+def clear_messages(request, obj):
     """
     TODO
     """
@@ -43,7 +43,7 @@ def update_message(request, level, obj, message, extra_tags=""):
             "django.contrib.messages.middleware.MessageMiddleware"
         ) from exc
     else:
-        return messages.replace(level, obj, message, extra_tags)
+        return messages.clear(obj)
 
 
 def get_messages(request):
@@ -131,3 +131,7 @@ def error(request, obj, message, extra_tags=""):
         message,
         extra_tags=extra_tags,
     )
+
+def clear(request, obj):
+    """Clear all messages of a given object."""
+    clear_messages(request, obj)

@@ -69,28 +69,6 @@ class StorageMixin:
 
         self._loaded_messages[msg.content_type_id][msg.obj_id].append(msg)
 
-    def replace(self, level, obj, message, extra_tags=""):
-        """
-        TODO
-        """
-        if not message:
-            return
-
-        # Check that the message level is not less than the recording level.
-        level = int(level)
-        if level < self.level:
-            return
-
-        # Add the message.
-        msg = Message(level, obj, message, extra_tags=extra_tags)
-
-        # Prepare the queued_messages dictonary.
-        if not msg.content_type_id in self._loaded_messages:
-            self._loaded_messages[msg.content_type_id] = dict()
-
-        self._loaded_messages[msg.content_type_id][msg.obj_id] = list()
-        self._loaded_messages[msg.content_type_id][msg.obj_id].append(msg)
-
     def get(self, model=None, obj=None):
         """
         Get either all or model specific or object specific messages.
@@ -104,3 +82,27 @@ class StorageMixin:
             return obj_msgs.get(str(obj.id), list())
         else:
             return self._loaded_messages
+
+    def clear(self, obj):
+        """
+        TODO
+        """
+        # Get content_type_id.
+        content_type_id = str(ContentType.objects.get_for_model(type(obj)).id)
+        obj_id = str(obj.id)
+
+        # Remove all messages for the object and cleanup the loaded_messages
+        # dict.
+        if content_type_id in self._loaded_messages:
+            if obj_id in self._loaded_messages[content_type_id]:
+                del self._loaded_messages[content_type_id][obj_id]
+            if not self._loaded_messages[content_type_id]:
+                del self._loaded_messages[content_type_id]
+
+    def clear_all(self):
+        """
+        TODO
+        """
+        # Remove all messages from loaded_messages.
+        del self._loaded_data
+
