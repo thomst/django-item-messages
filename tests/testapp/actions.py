@@ -23,8 +23,3 @@ def add_messages(modeladmin, request, queryset):
             'objects': queryset.order_by('pk'),
             'form': form,
             })
-
-
-def clear_messages(modeladmin, request, queryset):
-    for obj in queryset.all():
-        clear(request, obj)
