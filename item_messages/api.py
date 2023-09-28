@@ -4,6 +4,7 @@ from .storage import default_storage
 
 __all__ = (
     "add_message",
+    "clear_messages",
     "get_messages",
     "get_level",
     "set_level",
