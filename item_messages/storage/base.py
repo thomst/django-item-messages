@@ -1,6 +1,17 @@
 from django.contrib.messages.storage.base import Message as BaseMessage
 
 
+def get_message_id(msg, index):
+    """
+    _summary_
+
+    :param _type_ msg: _description_
+    :param _type_ index: _description_
+    :return _type_: _description_
+    """
+    return f'{msg.obj_type_hash}:{msg.obj_id}:{index}'
+
+
 class Message(BaseMessage):
     def __init__(self, level, obj, message, extra_tags=None):
         super().__init__(level, message, extra_tags)
@@ -57,7 +68,7 @@ class StorageMixin:
         if level < self.level:
             return
 
-        # Add the message.
+        # Create message object.
         msg = Message(level, obj, message, extra_tags=extra_tags)
 
         # Prepare the queued_messages dictonary.
@@ -66,7 +77,31 @@ class StorageMixin:
         if not msg.obj_id in self._loaded_messages[msg.obj_type_hash]:
             self._loaded_messages[msg.obj_type_hash][msg.obj_id] = list()
 
-        self._loaded_messages[msg.content_type_id][msg.obj_id].append(msg)
+        # Add message.
+        obj_msgs = self._loaded_messages[msg.obj_type_hash][msg.obj_id]
+        index = len(obj_msgs)
+        obj_msgs.append(msg)
+        return get_message_id(msg, index)
+
+    def update_message(self, msg_id, message, level=None, extra_tags=""):
+        """
+        _summary_
+
+        :param str msg_id: _description_
+        :param str message: _description_
+        """
+        type_hash, obj_id, index = msg_id.split(':')
+        try:
+            original_msg = self._loaded_messages.get(type_hash, dict()).get(obj_id, list())[index]
+        except IndexError:
+            pass
+        else:
+            msg = Message(
+                level or original_msg.level,
+                original_msg.obj,
+                message,
+                extra_tags or original_msg.extra_tags)
+            self._loaded_messages[type_hash][obj_id][index] = msg
 
     def get(self, model=None, obj=None):
         """

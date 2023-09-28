@@ -3,6 +3,7 @@ from django.contrib.admin.templatetags.base import InclusionAdminNode
 from django.contrib.admin.templatetags.admin_list import register
 from django.contrib.admin.templatetags.admin_list import result_list
 from django.utils.safestring import mark_safe
+from ..storage.base import get_message_id
 
 
 def item_messages_result_list(context, cl):
@@ -32,8 +33,9 @@ def item_messages_result_list(context, cl):
 
         # Else we render the messages html and append it to the item list.
         else:
-            for msg in obj_messages:
-                context = dict(colspan=len(item), msg=msg)
+            for index, msg in enumerate(obj_messages):
+                msg_id = get_message_id(msg, index)
+                context = dict(colspan=len(item), msg=msg, msg_id=msg_id)
                 msg_html = render_to_string('item_messages/item_message.html', context)
 
                 # Extend the item and add it to our items list.
