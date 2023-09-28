@@ -5,7 +5,7 @@ class Message(BaseMessage):
     def __init__(self, level, obj, message, extra_tags=None):
         super().__init__(level, message, extra_tags)
         self.obj_id = str(obj.id)
-        self.content_type_id = str(ContentType.objects.get_for_model(type(obj)).id)
+        self.obj_type_hash = str(hash(type(obj)))
 
     def __eq__(self, other):
         if not isinstance(other, Message):
@@ -61,10 +61,10 @@ class StorageMixin:
         msg = Message(level, obj, message, extra_tags=extra_tags)
 
         # Prepare the queued_messages dictonary.
-        if not msg.content_type_id in self._loaded_messages:
-            self._loaded_messages[msg.content_type_id] = dict()
-        if not msg.obj_id in self._loaded_messages[msg.content_type_id]:
-            self._loaded_messages[msg.content_type_id][msg.obj_id] = list()
+        if not msg.obj_type_hash in self._loaded_messages:
+            self._loaded_messages[msg.obj_type_hash] = dict()
+        if not msg.obj_id in self._loaded_messages[msg.obj_type_hash]:
+            self._loaded_messages[msg.obj_type_hash][msg.obj_id] = list()
 
         self._loaded_messages[msg.content_type_id][msg.obj_id].append(msg)
 
@@ -73,11 +73,9 @@ class StorageMixin:
         Get either all or model specific or object specific messages.
         """
         if model:
-            content_type_id = ContentType.objects.get_for_model(model).id
-            return self._loaded_messages.get(str(content_type_id), dict())
+            return self._loaded_messages.get(str(hash(model)), dict())
         elif obj:
-            content_type_id = ContentType.objects.get_for_model(type(obj)).id
-            obj_msgs = self._loaded_messages.get(str(content_type_id), dict())
+            obj_msgs = self._loaded_messages.get(str(hash(type(obj))), dict())
             return obj_msgs.get(str(obj.id), list())
         else:
             return self._loaded_messages
@@ -86,17 +84,16 @@ class StorageMixin:
         """
         TODO
         """
-        # Get content_type_id.
-        content_type_id = str(ContentType.objects.get_for_model(type(obj)).id)
+        obj_type_hash = str(hash(type(obj)))
         obj_id = str(obj.id)
 
         # Remove all messages for the object and cleanup the loaded_messages
         # dict.
-        if content_type_id in self._loaded_messages:
-            if obj_id in self._loaded_messages[content_type_id]:
-                del self._loaded_messages[content_type_id][obj_id]
-            if not self._loaded_messages[content_type_id]:
-                del self._loaded_messages[content_type_id]
+        if obj_type_hash in self._loaded_messages:
+            if obj_id in self._loaded_messages[obj_type_hash]:
+                del self._loaded_messages[obj_type_hash][obj_id]
+            if not self._loaded_messages[obj_type_hash]:
+                del self._loaded_messages[obj_type_hash]
 
     def clear_all(self):
         """
