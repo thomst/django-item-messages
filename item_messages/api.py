@@ -1,6 +1,6 @@
-from django.contrib.messages import constants
 from django.contrib.messages.api import MessageFailure
 from .storage import default_storage
+from . import constants
 
 __all__ = (
     "add_message",
