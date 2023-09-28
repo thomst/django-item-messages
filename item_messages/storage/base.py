@@ -1,4 +1,3 @@
-from django.contrib.contenttypes.models import ContentType
 from django.contrib.messages.storage.base import Message as BaseMessage
 
 
