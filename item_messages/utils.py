@@ -19,6 +19,7 @@ def get_model_id(obj_or_model):
     :return _type_: _description_
     """
     if isinstance(obj_or_model, Model):
-        return str(hash(type(obj_or_model)))
+        model = type(obj_or_model)
     else:
-        return str(hash(obj_or_model))
+        model = obj_or_model
+    return f'{model.__module__}.{model.__name__}'
