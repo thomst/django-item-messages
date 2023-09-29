@@ -30,7 +30,7 @@ class StorageMixin:
                     msg._prepare()
 
     @property
-    def _messages(self):
+    def _loaded_messages(self):
         """
         _summary_
         """
@@ -43,8 +43,8 @@ class StorageMixin:
         """
         _summary_
         """
-        self._prepare_messages(self._messages)
-        return self._store(self._messages, response)
+        self._prepare_messages(self._loaded_messages)
+        return self._store(self._loaded_messages, response)
 
     def add(self, obj, level, message, extra_tags="", extra_data=None):
         """
@@ -62,13 +62,13 @@ class StorageMixin:
         msg = Message(obj, level, message, extra_tags, extra_data)
 
         # Prepare the queued_messages dictonary.
-        if not msg.model_id in self._messages:
-            self._messages[msg.model_id] = dict()
-        if not msg.obj_id in self._messages[msg.model_id]:
-            self._messages[msg.model_id][msg.obj_id] = OrderedDict()
+        if not msg.model_id in self._loaded_messages:
+            self._loaded_messages[msg.model_id] = dict()
+        if not msg.obj_id in self._loaded_messages[msg.model_id]:
+            self._loaded_messages[msg.model_id][msg.obj_id] = OrderedDict()
 
         # Add message.
-        self._messages[msg.model_id][msg.obj_id][msg.id] = msg
+        self._loaded_messages[msg.model_id][msg.obj_id][msg.id] = msg
         return msg
 
     def update_message(self, msg_id, message, level=None, extra_tags="", extra_data=None):
@@ -87,7 +87,7 @@ class StorageMixin:
                 extra_tags or msg.extra_tags,
                 extra_data or msg.extra_data,
                 )
-            self._messages[msg.model_id][msg.obj_id][msg.id] = new_msg
+            self._loaded_messages[msg.model_id][msg.obj_id][msg.id] = new_msg
 
     def get(self, model=None, obj=None, msg_id=None):
         """
@@ -96,16 +96,16 @@ class StorageMixin:
         if msg_id:
             model_id, obj_id = msg_id.split(':')[:2]
             try:
-                return self._messages.get(model_id, {}).get(obj_id, {})[msg_id]
+                return self._loaded_messages.get(model_id, {}).get(obj_id, {})[msg_id]
             except KeyError:
                 return None
         elif obj:
             model_id, obj_id = get_msg_path(obj)
-            return self._messages.get(model_id, {}).get(obj_id, {})
+            return self._loaded_messages.get(model_id, {}).get(obj_id, {})
         elif model:
-            return self._messages.get(get_model_id(model), {})
+            return self._loaded_messages.get(get_model_id(model), {})
         else:
-            return self._messages
+            return self._loaded_messages
 
     def remove(self, model=None, obj=None, msg_id=None):
         """
@@ -114,18 +114,18 @@ class StorageMixin:
         if msg_id:
             model_id, obj_id = msg_id.split(':')[:2]
             try:
-                del self._messages.get(model_id, {}).get(obj_id, {})[msg_id]
+                del self._loaded_messages.get(model_id, {}).get(obj_id, {})[msg_id]
             except KeyError:
                 pass
         elif obj:
             model_id, obj_id = get_msg_path(obj)
             try:
-                del self._messages.get(model_id, {})[obj_id]
+                del self._loaded_messages.get(model_id, {})[obj_id]
             except KeyError:
                 pass
         elif model:
             try:
-                del self._messages[get_model_id(model)]
+                del self._loaded_messages[get_model_id(model)]
             except KeyError:
                 pass
         else:
