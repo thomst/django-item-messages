@@ -32,7 +32,7 @@ class Message(BaseMessage):
 class StorageMixin:
     def _prepare_messages(self, messages):
         """
-        Prepare a list of messages for storage.
+        _summary_
         """
         for model_msgs in messages.values():
             for obj_msgs in model_msgs.values():
@@ -42,7 +42,7 @@ class StorageMixin:
     @property
     def _loaded_messages(self):
         """
-        TODO
+        _summary_
         """
         if not hasattr(self, "_loaded_data"):
             messages, _ = self._get()
@@ -51,14 +51,14 @@ class StorageMixin:
 
     def update(self, response):
         """
-        TODO
+        _summary_
         """
         self._prepare_messages(self._loaded_messages)
         return self._store(self._loaded_messages, response)
 
     def add(self, level, obj, message, extra_tags=""):
         """
-        TODO
+        _summary_
         """
         if not message:
             return
