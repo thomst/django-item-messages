@@ -26,12 +26,12 @@ def _get_storage(request):
         ) from exc
 
 
-def add_message(request, obj, level, message, extra_tags=""):
+def add_message(request, obj, level, message, extra_tags="", extra_data=None):
     """
     Attempt to add a message to the request using the 'messages' app.
     """
     messages = _get_storage(request)
-    return messages.add(obj, level, message, extra_tags)
+    return messages.add(obj, level, message, extra_tags, extra_data)
 
 
 def clear_messages(request, obj):
@@ -42,12 +42,12 @@ def clear_messages(request, obj):
     return messages.clear(obj)
 
 
-def set_message(request, obj, level, message, extra_tags=""):
+def set_message(request, obj, level, message, extra_tags="", extra_data=None):
     """
     _summary_
     """
     clear_messages(request, obj)
-    add_message(request, obj, level, message, extra_tags="")
+    add_message(request, obj, level, message, extra_tags, extra_data)
 
 
 def get_messages(request):

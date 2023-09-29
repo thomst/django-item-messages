@@ -13,10 +13,11 @@ def get_message_id(msg, index):
 
 
 class Message(BaseMessage):
-    def __init__(self, obj, level, message, extra_tags=None):
+    def __init__(self, obj, level, message, extra_tags=None, extra_data=None):
         super().__init__(level, message, extra_tags)
         self.obj_id = str(obj.id)
         self.obj_type_hash = str(hash(type(obj)))
+        self.extra_data = extra_data or dict()
 
     def __eq__(self, other):
         if not isinstance(other, Message):
@@ -56,7 +57,7 @@ class StorageMixin:
         self._prepare_messages(self._loaded_messages)
         return self._store(self._loaded_messages, response)
 
-    def add(self, obj, level, message, extra_tags=""):
+    def add(self, obj, level, message, extra_tags="", extra_data=None):
         """
         _summary_
         """
@@ -69,7 +70,7 @@ class StorageMixin:
             return
 
         # Create message object.
-        msg = Message(obj, level, message, extra_tags=extra_tags)
+        msg = Message(obj, level, message, extra_tags, extra_data)
 
         # Prepare the queued_messages dictonary.
         if not msg.obj_type_hash in self._loaded_messages:
@@ -83,7 +84,7 @@ class StorageMixin:
         obj_msgs.append(msg)
         return get_message_id(msg, index)
 
-    def update_message(self, msg_id, message, level=None, extra_tags=""):
+    def update_message(self, msg_id, message, level=None, extra_tags="", extra_data=None):
         """
         _summary_
 
@@ -100,7 +101,9 @@ class StorageMixin:
                 level or original_msg.level,
                 original_msg.obj,
                 message,
-                extra_tags or original_msg.extra_tags)
+                extra_tags or original_msg.extra_tags,
+                extra_data or original_msg.extra_data,
+                )
             self._loaded_messages[type_hash][obj_id][index] = msg
 
     def get(self, model=None, obj=None):
