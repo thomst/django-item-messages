@@ -1,4 +1,12 @@
 from django.contrib.messages.constants import *
 
 
-# TODO: define __all__
+__all__ = (
+    'DEBUG',
+    'INFO',
+    'SUCCESS',
+    'WARNING',
+    'ERROR',
+    'DEFAULT_TAGS',
+    'DEFAULT_LEVELS',
+)
