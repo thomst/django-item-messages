@@ -55,7 +55,7 @@ def get_messages(request):
     Return the message storage on the request if it exists, otherwise return
     an empty dict.
     """
-    return getattr(request, "_item_messages", dict())
+    return getattr(request, "_item_messages", {})
 
 
 def get_level(request):
