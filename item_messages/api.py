@@ -39,7 +39,7 @@ def clear_messages(request, obj):
     TODO
     """
     messages = _get_storage(request)
-    return messages.clear(obj)
+    return messages.remove(obj)
 
 
 def set_message(request, obj, level, message, extra_tags="", extra_data=None):

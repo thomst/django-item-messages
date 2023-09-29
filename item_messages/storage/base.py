@@ -1,23 +1,14 @@
 from django.contrib.messages.storage.base import Message as BaseMessage
-
-
-def get_message_id(msg, index):
-    """
-    _summary_
-
-    :param _type_ msg: _description_
-    :param _type_ index: _description_
-    :return _type_: _description_
-    """
-    return f'{msg.obj_type_hash}:{msg.obj_id}:{index}'
+from ..utils import get_msg_path
+from ..utils import get_msg_id
+from ..utils import get_model_id
 
 
 class Message(BaseMessage):
     def __init__(self, obj, level, message, extra_tags=None, extra_data=None):
         super().__init__(level, message, extra_tags)
-        self.obj_id = str(obj.id)
-        self.obj_type_hash = str(hash(type(obj)))
-        self.extra_data = extra_data or dict()
+        self.model_id, self.obj_id = get_msg_path(obj)
+        self.extra_data = extra_data or {}
 
     def __eq__(self, other):
         if not isinstance(other, Message):
@@ -26,10 +17,11 @@ class Message(BaseMessage):
             self.level == other.level
             and self.message == other.message
             and self.obj_id == other.obj_id
-            and self.obj_type_hash == other.obj_type_hash
+            and self.model_id == other.model_id
         )
 
 
+# FIXME: Make this class a dict type.
 class StorageMixin:
     def _prepare_messages(self, messages):
         """
@@ -41,7 +33,7 @@ class StorageMixin:
                     msg._prepare()
 
     @property
-    def _loaded_messages(self):
+    def _messages(self):
         """
         _summary_
         """
@@ -54,8 +46,8 @@ class StorageMixin:
         """
         _summary_
         """
-        self._prepare_messages(self._loaded_messages)
-        return self._store(self._loaded_messages, response)
+        self._prepare_messages(self._messages)
+        return self._store(self._messages, response)
 
     def add(self, obj, level, message, extra_tags="", extra_data=None):
         """
@@ -73,16 +65,16 @@ class StorageMixin:
         msg = Message(obj, level, message, extra_tags, extra_data)
 
         # Prepare the queued_messages dictonary.
-        if not msg.obj_type_hash in self._loaded_messages:
-            self._loaded_messages[msg.obj_type_hash] = dict()
-        if not msg.obj_id in self._loaded_messages[msg.obj_type_hash]:
-            self._loaded_messages[msg.obj_type_hash][msg.obj_id] = list()
+        if not msg.model_id in self._messages:
+            self._messages[msg.model_id] = dict()
+        if not msg.obj_id in self._messages[msg.model_id]:
+            self._messages[msg.model_id][msg.obj_id] = list()
 
         # Add message.
-        obj_msgs = self._loaded_messages[msg.obj_type_hash][msg.obj_id]
+        obj_msgs = self._messages[msg.model_id][msg.obj_id]
         index = len(obj_msgs)
         obj_msgs.append(msg)
-        return get_message_id(msg, index)
+        return get_msg_id(msg, index)
 
     def update_message(self, msg_id, message, level=None, extra_tags="", extra_data=None):
         """
@@ -91,9 +83,9 @@ class StorageMixin:
         :param str msg_id: _description_
         :param str message: _description_
         """
-        type_hash, obj_id, index = msg_id.split(':')
+        model_id, obj_id, index = msg_id.split(':')
         try:
-            original_msg = self._loaded_messages.get(type_hash, dict()).get(obj_id, list())[index]
+            original_msg = self._messages.get(model_id, dict()).get(obj_id, list())[index]
         except IndexError:
             pass
         else:
@@ -104,39 +96,46 @@ class StorageMixin:
                 extra_tags or original_msg.extra_tags,
                 extra_data or original_msg.extra_data,
                 )
-            self._loaded_messages[type_hash][obj_id][index] = msg
+            self._messages[model_id][obj_id][index] = msg
 
-    def get(self, model=None, obj=None):
+    def get(self, model=None, obj=None, msg_id=None):
         """
         Get either all or model specific or object specific messages.
         """
-        if model:
-            return self._loaded_messages.get(str(hash(model)), dict())
+        if msg_id:
+            model_id, obj_id, index = msg_id.split(':')
+            try:
+                return self._messages.get(model_id, {}).get(obj_id, [])[index]
+            except IndexError:
+                return None
         elif obj:
-            obj_msgs = self._loaded_messages.get(str(hash(type(obj))), dict())
-            return obj_msgs.get(str(obj.id), list())
+            model_id, obj_id = get_msg_path(obj)
+            return self._messages.get(model_id, {}).get(obj_id, [])
+        elif model:
+            return self._messages.get(get_model_id(model), {})
         else:
-            return self._loaded_messages
+            return self._messages
 
-    def clear(self, obj):
+    def remove(self, model=None, obj=None, msg_id=None):
         """
-        TODO
+        _summary_
         """
-        obj_type_hash = str(hash(type(obj)))
-        obj_id = str(obj.id)
-
-        # Remove all messages for the object and cleanup the loaded_messages
-        # dict.
-        if obj_type_hash in self._loaded_messages:
-            if obj_id in self._loaded_messages[obj_type_hash]:
-                del self._loaded_messages[obj_type_hash][obj_id]
-            if not self._loaded_messages[obj_type_hash]:
-                del self._loaded_messages[obj_type_hash]
-
-    def clear_all(self):
-        """
-        TODO
-        """
-        # Remove all messages from loaded_messages.
-        del self._loaded_data
-
+        if msg_id:
+            model_id, obj_id, index = msg_id.split(':')
+            try:
+                del self._messages.get(model_id, {}).get(obj_id, [])[index]
+            except IndexError:
+                pass
+        elif obj:
+            model_id, obj_id = get_msg_path(obj)
+            try:
+                del self._messages.get(model_id, {})[obj_id]
+            except KeyError:
+                pass
+        elif model:
+            try:
+                del self._messages[get_model_id(model)]
+            except KeyError:
+                pass
+        else:
+            del self._loaded_data
