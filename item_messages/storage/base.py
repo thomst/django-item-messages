@@ -25,7 +25,7 @@ class Message(BaseMessage):
             self.level == other.level
             and self.message == other.message
             and self.obj_id == other.obj_id
-            and self.content_type_id == other.content_type_id
+            and self.obj_type_hash == other.obj_type_hash
         )
 
 
