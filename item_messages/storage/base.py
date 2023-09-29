@@ -26,7 +26,7 @@ class StorageMixin:
         """
         for model_msgs in messages.values():
             for obj_msgs in model_msgs.values():
-                for msg in obj_msgs:
+                for msg in obj_msgs.values():
                     msg._prepare()
 
     @property
