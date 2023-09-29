@@ -17,40 +17,43 @@ __all__ = (
 )
 
 
-def add_message(request, level, obj, message, extra_tags=""):
+def _get_storage(request):
+    try:
+        return request._item_messages
+    except AttributeError as exc:
+        raise MessageFailure(
+            "You cannot use item messages without installing ``item_messages``."
+        ) from exc
+
+
+def add_message(request, obj, level, message, extra_tags=""):
     """
     Attempt to add a message to the request using the 'messages' app.
     """
-    try:
-        messages = request._item_messages
-    except AttributeError as exc:
-        raise MessageFailure(
-            "You cannot add messages without installing "
-            "django.contrib.messages.middleware.MessageMiddleware"
-        ) from exc
-    else:
-        return messages.add(level, obj, message, extra_tags)
+    messages = _get_storage(request)
+    return messages.add(obj, level, message, extra_tags)
 
 
 def clear_messages(request, obj):
     """
     TODO
     """
-    try:
-        messages = request._item_messages
-    except AttributeError as exc:
-        raise MessageFailure(
-            "You cannot add messages without installing "
-            "django.contrib.messages.middleware.MessageMiddleware"
-        ) from exc
-    else:
-        return messages.clear(obj)
+    messages = _get_storage(request)
+    return messages.clear(obj)
+
+
+def set_message(request, obj, level, message, extra_tags=""):
+    """
+    _summary_
+    """
+    clear_messages(request, obj)
+    add_message(request, obj, level, message, extra_tags="")
 
 
 def get_messages(request):
     """
     Return the message storage on the request if it exists, otherwise return
-    an empty list.
+    an empty dict.
     """
     return getattr(request, "_item_messages", dict())
 
@@ -83,8 +86,8 @@ def debug(request, obj, message, extra_tags=""):
     """Add a message with the ``DEBUG`` level."""
     add_message(
         request,
-        constants.DEBUG,
         obj,
+        constants.DEBUG,
         message,
         extra_tags=extra_tags,
     )
@@ -94,8 +97,8 @@ def info(request, obj, message, extra_tags=""):
     """Add a message with the ``INFO`` level."""
     add_message(
         request,
-        constants.INFO,
         obj,
+        constants.INFO,
         message,
         extra_tags=extra_tags,
     )
@@ -105,8 +108,8 @@ def success(request, obj, message, extra_tags=""):
     """Add a message with the ``SUCCESS`` level."""
     add_message(
         request,
-        constants.SUCCESS,
         obj,
+        constants.SUCCESS,
         message,
         extra_tags=extra_tags,
     )
@@ -116,8 +119,8 @@ def warning(request, obj, message, extra_tags=""):
     """Add a message with the ``WARNING`` level."""
     add_message(
         request,
-        constants.WARNING,
         obj,
+        constants.WARNING,
         message,
         extra_tags=extra_tags,
     )
@@ -127,8 +130,8 @@ def error(request, obj, message, extra_tags=""):
     """Add a message with the ``ERROR`` level."""
     add_message(
         request,
-        constants.ERROR,
         obj,
+        constants.ERROR,
         message,
         extra_tags=extra_tags,
     )
