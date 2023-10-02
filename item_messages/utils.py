@@ -1,6 +1,19 @@
 from django.db.models import Model
 
 
+def get_msg_id(obj_messages):
+    """
+    _summary_
+
+    :param _type_ msg: _description_
+    :return _type_: _description_
+    """
+    try:
+        return str(int([id for id in obj_messages.keys()][-1]) + 1)
+    except IndexError:
+        return str(0)
+
+
 def get_msg_path(obj):
     """
     _summary_

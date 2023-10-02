@@ -6,7 +6,7 @@
     result list.
 {% endcomment %}
 </tr>
-<tr class="item-message {{msg.tags}}" id="{{msg.id}}" {% for k, v in msg.extra_data.items %}data-{{k}}="{{v}}" {% endfor %}>
+<tr class="item-message {{msg.tags}}" id="{{msg.model_id}}:{{msg.obj_id}}:{{msg.id}}" {% for k, v in msg.extra_data.items %}data-{{k}}="{{v}}" {% endfor %}>
     <td colspan={{colspan}}><div>{{msg.message}}</div></td>
 </tr>
 <tr class="empty">

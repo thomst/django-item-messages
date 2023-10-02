@@ -1,16 +1,17 @@
-import uuid
 from collections import OrderedDict
 from django.contrib.messages.storage.base import Message as BaseMessage
 from ..utils import get_msg_path
 from ..utils import get_model_id
+from ..utils import get_msg_id
 
 
 class Message(BaseMessage):
-    def __init__(self, obj, level, message, extra_tags=None, extra_data=None):
+    def __init__(self, msg_id, model_id, obj_id, level, message, extra_tags="", extra_data=None):
         super().__init__(level, message, extra_tags)
-        self.model_id, self.obj_id = get_msg_path(obj)
-        self.extra_data = extra_data or {}
-        self.id = f'{self.model_id}:{self.obj_id}:{uuid.uuid4().fields[-1]}'
+        self.id = msg_id
+        self.model_id = model_id
+        self.obj_id = obj_id
+        self.extra_data = extra_data
 
     def __eq__(self, other):
         if not isinstance(other, Message):
@@ -58,17 +59,18 @@ class StorageMixin:
         if level < self.level:
             return
 
-        # Create message object.
-        msg = Message(obj, level, message, extra_tags, extra_data)
-
         # Prepare the queued_messages dictonary.
-        if not msg.model_id in self._loaded_messages:
-            self._loaded_messages[msg.model_id] = dict()
-        if not msg.obj_id in self._loaded_messages[msg.model_id]:
-            self._loaded_messages[msg.model_id][msg.obj_id] = OrderedDict()
+        model_id, obj_id = get_msg_path(obj)
+        if not model_id in self._loaded_messages:
+            self._loaded_messages[model_id] = dict()
+        if not obj_id in self._loaded_messages[model_id]:
+            self._loaded_messages[model_id][obj_id] = OrderedDict()
 
-        # Add message.
+        # Create and add message.
+        msg_id = get_msg_id(self._loaded_messages[model_id][obj_id])
+        msg = Message(msg_id, model_id, obj_id, level, message, extra_tags, extra_data)
         self._loaded_messages[msg.model_id][msg.obj_id][msg.id] = msg
+
         return msg
 
     def update_message(self, msg_id, message, level=None, extra_tags="", extra_data=None):
@@ -81,8 +83,10 @@ class StorageMixin:
         msg = self.get(msg_id=msg_id)
         if msg:
             new_msg = Message(
+                msg.id,
+                msg.model_id,
+                msg.obj_id,
                 level or msg.level,
-                msg.obj,
                 message,
                 extra_tags or msg.extra_tags,
                 extra_data or msg.extra_data,
