@@ -103,26 +103,14 @@ def set_level(request, level):
 
 def debug(request, obj, message, extra_tags=""):
     """Add a message with the ``DEBUG`` level."""
-    add_message(
-        request,
-        obj,
-        constants.DEBUG,
-        message,
-        extra_tags=extra_tags,
-    )
+    add_message(request, obj, constants.DEBUG, message, extra_tags=extra_tags)
 
 #: Synonym for :func:`~.debug`.
 item_debug = debug
 
 def info(request, obj, message, extra_tags=""):
     """Add a message with the ``INFO`` level."""
-    add_message(
-        request,
-        obj,
-        constants.INFO,
-        message,
-        extra_tags=extra_tags,
-    )
+    add_message(request, obj, constants.INFO, message, extra_tags=extra_tags)
 
 #: Synonym for :func:`~.info`.
 item_info = info
@@ -130,13 +118,7 @@ item_info = info
 
 def success(request, obj, message, extra_tags=""):
     """Add a message with the ``SUCCESS`` level."""
-    add_message(
-        request,
-        obj,
-        constants.SUCCESS,
-        message,
-        extra_tags=extra_tags,
-    )
+    add_message(request, obj, constants.SUCCESS, message, extra_tags=extra_tags)
 
 #: Synonym for :func:`~.success`.
 item_success = success
@@ -144,13 +126,7 @@ item_success = success
 
 def warning(request, obj, message, extra_tags=""):
     """Add a message with the ``WARNING`` level."""
-    add_message(
-        request,
-        obj,
-        constants.WARNING,
-        message,
-        extra_tags=extra_tags,
-    )
+    add_message(request, obj, constants.WARNING, message, extra_tags=extra_tags)
 
 #: Synonym for :func:`~.warning`.
 item_warning = warning
@@ -158,13 +134,7 @@ item_warning = warning
 
 def error(request, obj, message, extra_tags=""):
     """Add a message with the ``ERROR`` level."""
-    add_message(
-        request,
-        obj,
-        constants.ERROR,
-        message,
-        extra_tags=extra_tags,
-    )
+    add_message(request, obj, constants.ERROR, message, extra_tags=extra_tags)
 
 #: Synonym for :func:`~.error`.
 item_error = error
