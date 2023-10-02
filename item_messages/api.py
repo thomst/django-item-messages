@@ -2,6 +2,7 @@ from django.contrib.messages.api import MessageFailure
 from .storage import default_storage
 from . import constants
 
+
 __all__ = (
     "add_message",
     "update_message",
@@ -10,10 +11,15 @@ __all__ = (
     "get_level",
     "set_level",
     "debug",
+    "item_debug",
     "info",
+    "item_info",
     "success",
+    "item_success",
     "warning",
+    "item_warning",
     "error",
+    "item_error",
     "MessageFailure",
 )
 
@@ -105,6 +111,8 @@ def debug(request, obj, message, extra_tags=""):
         extra_tags=extra_tags,
     )
 
+#: Synonym for :func:`~.debug`.
+item_debug = debug
 
 def info(request, obj, message, extra_tags=""):
     """Add a message with the ``INFO`` level."""
@@ -115,6 +123,9 @@ def info(request, obj, message, extra_tags=""):
         message,
         extra_tags=extra_tags,
     )
+
+#: Synonym for :func:`~.info`.
+item_info = info
 
 
 def success(request, obj, message, extra_tags=""):
@@ -127,6 +138,9 @@ def success(request, obj, message, extra_tags=""):
         extra_tags=extra_tags,
     )
 
+#: Synonym for :func:`~.success`.
+item_success = success
+
 
 def warning(request, obj, message, extra_tags=""):
     """Add a message with the ``WARNING`` level."""
@@ -137,6 +151,9 @@ def warning(request, obj, message, extra_tags=""):
         message,
         extra_tags=extra_tags,
     )
+
+#: Synonym for :func:`~.warning`.
+item_warning = warning
 
 
 def error(request, obj, message, extra_tags=""):
