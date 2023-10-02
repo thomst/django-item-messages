@@ -1,7 +1,7 @@
 from django.db.models import Model
 
 
-def get_msg_id(obj_messages):
+def get_msg_key(obj_messages):
     """
     _summary_
 
@@ -21,10 +21,10 @@ def get_msg_path(obj):
     :param _type_ obj: _description_
     :return _type_: _description_
     """
-    return (get_model_id(obj), str(obj.id))
+    return (get_model_key(obj), str(obj.id))
 
 
-def get_model_id(obj_or_model):
+def get_model_key(obj_or_model):
     """
     _summary_
 

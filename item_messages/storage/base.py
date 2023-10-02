@@ -1,22 +1,22 @@
 from collections import OrderedDict
 from django.contrib.messages.storage.base import Message as BaseMessage
 from ..utils import get_msg_path
-from ..utils import get_model_id
-from ..utils import get_msg_id
+from ..utils import get_model_key
+from ..utils import get_msg_key
 
 
 class Message(BaseMessage):
-    def __init__(self, msg_id, model_id, obj_id, level, message, extra_tags="", extra_data=None):
+    def __init__(self, msg_key, model_key, obj_key, level, message, extra_tags="", extra_data=None):
         super().__init__(level, message, extra_tags)
-        self.id = msg_id
-        self.model_id = model_id
-        self.obj_id = obj_id
+        self.key = msg_key
+        self.model_key = model_key
+        self.obj_key = obj_key
         self.extra_data = extra_data
 
     def __eq__(self, other):
         if not isinstance(other, Message):
             return NotImplemented
-        return self.id == other.id
+        return self.key == other.key
 
 
 # FIXME: Make this class a dict type.
@@ -60,16 +60,16 @@ class StorageMixin:
             return
 
         # Prepare the queued_messages dictonary.
-        model_id, obj_id = get_msg_path(obj)
-        if not model_id in self._loaded_messages:
-            self._loaded_messages[model_id] = dict()
-        if not obj_id in self._loaded_messages[model_id]:
-            self._loaded_messages[model_id][obj_id] = OrderedDict()
+        model_key, obj_key = get_msg_path(obj)
+        if not model_key in self._loaded_messages:
+            self._loaded_messages[model_key] = dict()
+        if not obj_key in self._loaded_messages[model_key]:
+            self._loaded_messages[model_key][obj_key] = OrderedDict()
 
         # Create and add message.
-        msg_id = get_msg_id(self._loaded_messages[model_id][obj_id])
-        msg = Message(msg_id, model_id, obj_id, level, message, extra_tags, extra_data)
-        self._loaded_messages[msg.model_id][msg.obj_id][msg.id] = msg
+        msg_key = get_msg_key(self._loaded_messages[model_key][obj_key])
+        msg = Message(msg_key, model_key, obj_key, level, message, extra_tags, extra_data)
+        self._loaded_messages[msg.model_key][msg.obj_key][msg.key] = msg
 
         return msg
 
@@ -77,37 +77,37 @@ class StorageMixin:
         """
         _summary_
 
-        :param str msg_id: _description_
+        :param str msg_key: _description_
         :param str message: _description_
         """
         msg = self.get(msg_id=msg_id)
         if msg:
             new_msg = Message(
-                msg.id,
-                msg.model_id,
-                msg.obj_id,
+                msg.key,
+                msg.model_key,
+                msg.obj_key,
                 level or msg.level,
                 message,
                 extra_tags or msg.extra_tags,
                 extra_data or msg.extra_data,
                 )
-            self._loaded_messages[msg.model_id][msg.obj_id][msg.id] = new_msg
+            self._loaded_messages[msg.model_key][msg.obj_key][msg.key] = new_msg
 
     def get(self, model=None, obj=None, msg_id=None):
         """
         Get either all or model specific or object specific messages.
         """
         if msg_id:
-            model_id, obj_id = msg_id.split(':')[:2]
+            model_key, obj_key, msg_key = msg_id.split(':')
             try:
-                return self._loaded_messages.get(model_id, {}).get(obj_id, {})[msg_id]
+                return self._loaded_messages.get(model_key, {}).get(obj_key, {})[msg_key]
             except KeyError:
                 return None
         elif obj:
-            model_id, obj_id = get_msg_path(obj)
-            return self._loaded_messages.get(model_id, {}).get(obj_id, {})
+            model_key, obj_key = get_msg_path(obj)
+            return self._loaded_messages.get(model_key, {}).get(obj_key, {})
         elif model:
-            return self._loaded_messages.get(get_model_id(model), {})
+            return self._loaded_messages.get(get_model_key(model), {})
         else:
             return self._loaded_messages
 
@@ -116,20 +116,20 @@ class StorageMixin:
         _summary_
         """
         if msg_id:
-            model_id, obj_id = msg_id.split(':')[:2]
+            model_key, obj_key, msg_key = msg_id.split(':')
             try:
-                del self._loaded_messages.get(model_id, {}).get(obj_id, {})[msg_id]
+                del self._loaded_messages.get(model_key, {}).get(obj_key, {})[msg_key]
             except KeyError:
                 pass
         elif obj:
-            model_id, obj_id = get_msg_path(obj)
+            model_key, obj_key = get_msg_path(obj)
             try:
-                del self._loaded_messages.get(model_id, {})[obj_id]
+                del self._loaded_messages.get(model_key, {})[obj_key]
             except KeyError:
                 pass
         elif model:
             try:
-                del self._loaded_messages[get_model_id(model)]
+                del self._loaded_messages[get_model_key(model)]
             except KeyError:
                 pass
         else:

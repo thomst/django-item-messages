@@ -17,7 +17,7 @@ class MessageEncoder(BaseMessageEncoder):
     def default(self, obj):
         if isinstance(obj, Message):
             is_safedata = 1 if isinstance(obj.message, SafeData) else 0
-            message = [self.message_key, is_safedata, obj.id, obj.model_id, obj.obj_id, obj.level, obj.message]
+            message = [self.message_key, is_safedata, obj.key, obj.model_key, obj.obj_key, obj.level, obj.message]
             if obj.extra_tags:
                 message.append(obj.extra_tags)
             if obj.extra_data:
