@@ -4,7 +4,8 @@ from . import constants
 
 __all__ = (
     "add_message",
-    "clear_messages",
+    "update_message",
+    "remove_messages",
     "get_messages",
     "get_level",
     "set_level",
@@ -34,28 +35,40 @@ def add_message(request, obj, level, message, extra_tags="", extra_data=None):
     return messages.add(obj, level, message, extra_tags, extra_data)
 
 
-def clear_messages(request, obj):
+def update_message(request, msg_id, level, message, extra_tags="", extra_data=None):
     """
-    TODO
+    Attempt to update a message to the request using the 'messages' app.
     """
     messages = _get_storage(request)
-    return messages.remove(obj=obj)
+    return messages.update(msg_id, message, level, extra_tags, extra_data)
 
 
-def set_message(request, obj, level, message, extra_tags="", extra_data=None):
+def remove_messages(request, model=None, obj=None, msg_id=None):
     """
     _summary_
+
+    :param _type_ request: _description_
+    :param _type_ model: _description_, defaults to None
+    :param _type_ obj: _description_, defaults to None
+    :param _type_ msg_id: _description_, defaults to None
+    :return _type_: _description_
     """
-    clear_messages(request, obj)
-    add_message(request, obj, level, message, extra_tags, extra_data)
+    messages = _get_storage(request)
+    return messages.remove(model, obj, msg_id)
 
 
-def get_messages(request):
+def get_messages(request, model=None, obj=None, msg_id=None):
     """
-    Return the message storage on the request if it exists, otherwise return
-    an empty dict.
+    _summary_
+
+    :param _type_ request: _description_
+    :param _type_ model: _description_, defaults to None
+    :param _type_ obj: _description_, defaults to None
+    :param _type_ msg_id: _description_, defaults to None
+    :return _type_: _description_
     """
-    return getattr(request, "_item_messages", {})
+    messages = _get_storage(request)
+    return messages.get(model, obj, msg_id)
 
 
 def get_level(request):
@@ -136,6 +149,5 @@ def error(request, obj, message, extra_tags=""):
         extra_tags=extra_tags,
     )
 
-def clear(request, obj):
-    """Clear all messages of a given object."""
-    clear_messages(request, obj)
+#: Synonym for :func:`~.error`.
+item_error = error
