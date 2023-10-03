@@ -13,6 +13,10 @@ class Message(BaseMessage):
         self.obj_key = obj_key
         self.extra_data = extra_data
 
+    @property
+    def id(self):
+        return f'{self.model_key}:{self.obj_key}:{self.key}'
+
     def __eq__(self, other):
         if not isinstance(other, Message):
             return NotImplemented
