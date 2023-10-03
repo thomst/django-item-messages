@@ -1,5 +1,5 @@
 
-from item_messages.api import clear_messages
+from item_messages.api import remove_messages
 
 
 def clear_item_messages(modeladmin, request, queryset):
@@ -7,4 +7,4 @@ def clear_item_messages(modeladmin, request, queryset):
     An admin action to clear current item messages.
     """
     for obj in queryset.all():
-        clear_messages(request, obj)
+        remove_messages(request, obj=obj)
