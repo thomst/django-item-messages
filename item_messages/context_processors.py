@@ -8,6 +8,6 @@ def item_messages(request):
     'DEFAULT_MESSAGE_LEVELS'.
     """
     return {
-        "item_messages": get_messages(request),
+        "item_messages": getattr(request, '_item_messages', None),
         "DEFAULT_MESSAGE_LEVELS": DEFAULT_LEVELS,
     }
