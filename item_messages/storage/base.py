@@ -73,7 +73,7 @@ class StorageMixin:
 
         return msg
 
-    def update_message(self, msg_id, message, level=None, extra_tags="", extra_data=None):
+    def update_message(self, msg_id, level=None, message="", extra_tags="", extra_data=None):
         """
         _summary_
 
@@ -87,7 +87,7 @@ class StorageMixin:
                 msg.model_key,
                 msg.obj_key,
                 level or msg.level,
-                message,
+                message or msg.message,
                 extra_tags or msg.extra_tags,
                 extra_data or msg.extra_data,
                 )

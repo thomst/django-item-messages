@@ -41,12 +41,12 @@ def add_message(request, obj, level, message, extra_tags="", extra_data=None):
     return messages.add(obj, level, message, extra_tags, extra_data)
 
 
-def update_message(request, msg_id, level, message, extra_tags="", extra_data=None):
+def update_message(request, msg_id, level=None, message="", extra_tags="", extra_data=None):
     """
     Attempt to update a message to the request using the 'messages' app.
     """
     messages = _get_storage(request)
-    return messages.update(msg_id, message, level, extra_tags, extra_data)
+    return messages.update_message(msg_id, message, level, extra_tags, extra_data)
 
 
 def remove_messages(request, model=None, obj=None, msg_id=None):
