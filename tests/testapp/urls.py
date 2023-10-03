@@ -15,8 +15,22 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from .models import TestModel
+from .views import add_message_view
+from .views import update_message_view
+from .views import remove_messages_view
+from .views import get_messages_view
 
+kwargs = dict(model=TestModel)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('add_message/testmodel/<int:obj_id>/', add_message_view, kwargs),
+    path('update_message/<msg_id>/', update_message_view),
+    path('update_message/<msg_id>/', remove_messages_view),
+    path('remove_messages/testmodel/', remove_messages_view, kwargs),
+    path('remove_messages/testmodel/<int:obj_id>/', remove_messages_view, kwargs),
+    path('update_message/<msg_id>/', get_messages_view),
+    path('remove_messages/testmodel/', get_messages_view, kwargs),
+    path('remove_messages/testmodel/<int:obj_id>/', get_messages_view, kwargs),
 ]
