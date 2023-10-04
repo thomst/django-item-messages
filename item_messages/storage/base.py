@@ -96,6 +96,7 @@ class StorageMixin:
                 extra_data or msg.extra_data,
                 )
             self._loaded_messages[msg.model_key][msg.obj_key][msg.key] = new_msg
+        return msg
 
     def get(self, model=None, obj=None, msg_id=None):
         """
