@@ -122,19 +122,22 @@ class StorageMixin:
         if msg_id:
             model_key, obj_key, msg_key = msg_id.split(':')
             try:
-                del self._loaded_messages.get(model_key, {}).get(obj_key, {})[msg_key]
+                thing = self._loaded_messages.get(model_key, {}).get(obj_key, {}).pop(msg_key)
             except KeyError:
-                pass
+                return
         elif obj:
             model_key, obj_key = get_msg_path(obj)
             try:
-                del self._loaded_messages.get(model_key, {})[obj_key]
+                thing = self._loaded_messages.get(model_key, {}).pop(obj_key)
             except KeyError:
-                pass
+                return
         elif model:
             try:
-                del self._loaded_messages[get_model_key(model)]
+                thing = self._loaded_messages.pop(get_model_key(model))
             except KeyError:
-                pass
+                return
         else:
+            thing = self._loaded_messages.copy()
             del self._loaded_data
+
+        return thing
