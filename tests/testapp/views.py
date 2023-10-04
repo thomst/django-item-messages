@@ -36,7 +36,7 @@ def add_message_view(request, obj_id, model):
 
 
 @require_POST
-def update_message_view(request, msg_id, level, message, extra_tags="", extra_data=None):
+def update_message_view(request, msg_id):
     level = request.POST.get('level', 20)
     message = request.POST.get('message', None)
     extra_tags = request.POST.get('extra_tags', "")
@@ -56,8 +56,12 @@ def remove_messages_view(request, model=None, obj_id=None, msg_id=None):
         remove_messages(request, obj=obj)
     elif msg_id:
         remove_messages(request, msg_id=msg_id)
-    else:
+    elif model:
         remove_messages(request, model=model)
+    else:
+        remove_messages(request)
+        url = '/admin/'
+        return HttpResponseRedirect(url)
 
     ct = ContentType.objects.get_for_model(model)
     url = reverse(f'admin:{ct.app_label}_{ct.model}_changelist')
@@ -71,7 +75,9 @@ def get_messages_view(request, model=None, obj_id=None, msg_id=None):
         msgs = get_messages(request, obj=obj)
     elif msg_id:
         msgs = [get_messages(request, msg_id=msg_id)]
-    else:
+    elif model:
         msgs = get_messages(request, model=model)
+    else:
+        msgs = get_messages(request)
 
     return render('testapp/messages.html', dict(msgs=msgs))
