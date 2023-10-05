@@ -4,5 +4,5 @@
         <div class="item-message {{msg.tags}}" id="{{msg.id}}" {% for k, v in msg.extra_data.items %}data-{{k}}="{{v}}" {% endfor %}>
             {{msg.message}}
         </div>
-    {% endor %}
+    {% endfor %}
 {% endblock %}

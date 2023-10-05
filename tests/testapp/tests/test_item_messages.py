@@ -7,6 +7,7 @@ from testapp.models import TestModel
 from item_messages.constants import DEFAULT_TAGS
 from item_messages.storage.session import MessageDecoder
 from item_messages.utils import get_msg_path
+from ..utils import flatten_dict
 
 
 
@@ -61,11 +62,9 @@ class ItemMessagesTests(TestCase):
         # Check if all messages are rendered.
         resp = self.client.get(self.changelist_url)
         self.assertEqual(resp.status_code, 200)
-        for model_msgs in msgs.values():
-            for obj_msgs in model_msgs.values():
-                for msg in obj_msgs.values():
-                    self.assertIn(msg.id, resp.content.decode('utf8'))
-                    self.assertIn(msg.message, resp.content.decode('utf8'))
+        for msg in flatten_dict(msgs):
+            self.assertIn(msg.id, resp.content.decode('utf8'))
+            self.assertIn(msg.message, resp.content.decode('utf8'))
 
     def test_update_messages(self):
         url_pattern = '/update_message/{msg_id}/'
@@ -99,31 +98,58 @@ class ItemMessagesTests(TestCase):
         self.assertNotIn(msg.message, resp.content.decode('utf8'))
 
         # Remove a message by model-key.
-        msg = [m for m in msgs[model_key][obj_key].values()][-2]
         url = '/remove_messages/testmodel/'
         resp = self.client.post(url, dict(), follow=True)
-        self.assertEqual(resp.status_code, 200)
-        self.assertNotIn(msg.id, resp.content.decode('utf8'))
-        self.assertNotIn(msg.message, resp.content.decode('utf8'))
+        for msg in flatten_dict(msgs[model_key]):
+            self.assertEqual(resp.status_code, 200)
+            self.assertNotIn(msg.id, resp.content.decode('utf8'))
+            self.assertNotIn(msg.message, resp.content.decode('utf8'))
 
         # Remove a message by obj-key.
-        msg = [m for m in msgs[model_key][obj_key].values()][-3]
         url = f'/remove_messages/testmodel/{msg.obj_key}/'
         resp = self.client.post(url, dict(), follow=True)
         self.assertEqual(resp.status_code, 200)
-        self.assertNotIn(msg.id, resp.content.decode('utf8'))
-        self.assertNotIn(msg.message, resp.content.decode('utf8'))
+        for msg in msgs[model_key][obj_key].values():
+            self.assertNotIn(msg.id, resp.content.decode('utf8'))
+            self.assertNotIn(msg.message, resp.content.decode('utf8'))
 
         # Remove all messages.
         url = '/remove_messages/'
         resp = self.client.post(url, dict(), follow=True)
         self.assertEqual(resp.status_code, 200)
 
-        # Check if there are gone.
+        # Check if there are all gone.
         resp = self.client.get(self.changelist_url)
         self.assertEqual(resp.status_code, 200)
-        for model_msgs in msgs.values():
-            for obj_msgs in model_msgs.values():
-                for msg in obj_msgs.values():
-                    self.assertNotIn(msg.id, resp.content.decode('utf8'))
-                    self.assertNotIn(msg.message, resp.content.decode('utf8'))
+        for msg in flatten_dict(msgs):
+            self.assertNotIn(msg.id, resp.content.decode('utf8'))
+            self.assertNotIn(msg.message, resp.content.decode('utf8'))
+
+    def test_get_messages(self):
+        msgs = self.add_messages()
+        obj = TestModel.objects.get(pk=1)
+        model_key, obj_key = get_msg_path(obj)
+
+        # Get a message by msg-id.
+        msg = [m for m in msgs[model_key][obj_key].values()][-1]
+        url = f'/get_messages/{msg.id}/'
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn(msg.id, resp.content.decode('utf8'))
+        self.assertIn(msg.message, resp.content.decode('utf8'))
+
+        # Get a message by model-key.
+        url = '/get_messages/testmodel/'
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 200)
+        for msg in flatten_dict(msgs[model_key]):
+            self.assertIn(msg.id, resp.content.decode('utf8'))
+            self.assertIn(msg.message, resp.content.decode('utf8'))
+
+        # Get a message by obj-key.
+        url = f'/get_messages/testmodel/{obj_key}/'
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 200)
+        for msg in msgs[model_key][obj_key].values():
+            self.assertIn(msg.id, resp.content.decode('utf8'))
+            self.assertIn(msg.message, resp.content.decode('utf8'))

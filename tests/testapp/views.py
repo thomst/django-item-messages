@@ -11,6 +11,7 @@ from item_messages.constants import DEFAULT_TAGS
 from item_messages.api import update_message
 from item_messages.api import remove_messages
 from item_messages.api import get_messages
+from .utils import flatten_dict
 
 
 
@@ -73,11 +74,14 @@ def get_messages_view(request, model=None, obj_id=None, msg_id=None):
     if obj_id:
         obj = model.objects.get(pk=obj_id)
         msgs = get_messages(request, obj=obj)
+        msgs = flatten_dict(msgs)
     elif msg_id:
         msgs = [get_messages(request, msg_id=msg_id)]
     elif model:
         msgs = get_messages(request, model=model)
+        msgs = flatten_dict(msgs)
     else:
         msgs = get_messages(request)
+        msgs = flatten_dict(msgs)
 
-    return render('testapp/messages.html', dict(msgs=msgs))
+    return render(request, 'testapp/messages.html', dict(msgs=msgs))
