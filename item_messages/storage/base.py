@@ -75,7 +75,7 @@ class StorageMixin:
         msg = Message(msg_key, model_key, obj_key, level, message, extra_tags, extra_data)
         self._loaded_messages[msg.model_key][msg.obj_key][msg.key] = msg
 
-        return msg
+        return msg.id
 
     def update_message(self, msg_id, level=None, message="", extra_tags="", extra_data=None):
         """
@@ -96,7 +96,6 @@ class StorageMixin:
                 extra_data or msg.extra_data,
                 )
             self._loaded_messages[msg.model_key][msg.obj_key][msg.key] = new_msg
-        return msg
 
     def get(self, model=None, obj=None, msg_id=None):
         """
@@ -123,22 +122,20 @@ class StorageMixin:
         if msg_id:
             model_key, obj_key, msg_key = msg_id.split(':')
             try:
-                thing = self._loaded_messages.get(model_key, {}).get(obj_key, {}).pop(msg_key)
+                del self._loaded_messages.get(model_key, {}).get(obj_key, {})[msg_key]
             except KeyError:
-                return
+                pass
         elif obj:
             model_key, obj_key = get_msg_path(obj)
             try:
-                thing = self._loaded_messages.get(model_key, {}).pop(obj_key)
+                del self._loaded_messages.get(model_key, {})[obj_key]
             except KeyError:
-                return
+                pass
         elif model:
             try:
-                thing = self._loaded_messages.pop(get_model_key(model))
+                del self._loaded_messages[get_model_key(model)]
             except KeyError:
-                return
+                pass
         else:
-            thing = self._loaded_messages.copy()
+            self._loaded_messages
             del self._loaded_data
-
-        return thing
