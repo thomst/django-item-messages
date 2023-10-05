@@ -138,6 +138,14 @@ class ItemMessagesTests(TestCase):
         self.assertIn(msg.id, resp.content.decode('utf8'))
         self.assertIn(msg.message, resp.content.decode('utf8'))
 
+        # Get a message by obj-key.
+        url = f'/get_messages/testmodel/{obj_key}/'
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 200)
+        for msg in msgs[model_key][obj_key].values():
+            self.assertIn(msg.id, resp.content.decode('utf8'))
+            self.assertIn(msg.message, resp.content.decode('utf8'))
+
         # Get a message by model-key.
         url = '/get_messages/testmodel/'
         resp = self.client.get(url)
@@ -146,10 +154,11 @@ class ItemMessagesTests(TestCase):
             self.assertIn(msg.id, resp.content.decode('utf8'))
             self.assertIn(msg.message, resp.content.decode('utf8'))
 
-        # Get a message by obj-key.
-        url = f'/get_messages/testmodel/{obj_key}/'
+        # Get all messages.
+        url = '/get_messages/'
         resp = self.client.get(url)
         self.assertEqual(resp.status_code, 200)
-        for msg in msgs[model_key][obj_key].values():
+        for msg in flatten_dict(msgs):
             self.assertIn(msg.id, resp.content.decode('utf8'))
             self.assertIn(msg.message, resp.content.decode('utf8'))
+
