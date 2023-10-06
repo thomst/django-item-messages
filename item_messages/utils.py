@@ -1,4 +1,5 @@
 from django.db.models import Model
+from django.contrib.contenttypes.models import ContentType
 
 
 def get_msg_key(obj_messages):
@@ -35,4 +36,4 @@ def get_model_key(obj_or_model):
         model = type(obj_or_model)
     else:
         model = obj_or_model
-    return f'{model.__module__}.{model.__name__}'
+    return str(ContentType.objects.get_for_model(model).id)
