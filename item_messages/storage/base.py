@@ -1,4 +1,5 @@
 from collections import OrderedDict
+from django.template.loader import render_to_string
 from django.contrib.messages.storage.base import Message as BaseMessage
 from ..utils import get_msg_path
 from ..utils import get_model_key
@@ -16,6 +17,10 @@ class Message(BaseMessage):
     @property
     def id(self):
         return f'{self.model_key}:{self.obj_key}:{self.key}'
+
+    @property
+    def html(self):
+        return render_to_string('item_messages/item_message.html', {'msg': self})
 
     def __eq__(self, other):
         if not isinstance(other, Message):

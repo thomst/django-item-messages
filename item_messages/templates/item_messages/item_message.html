@@ -1,12 +1,3 @@
-{% comment %}
-    Items are a list of table cells while their table row is set by the
-    change_list_result template. Since we inject additional table rows to the
-    list of table cells we start with a closing row tag and end with opening a
-    new one. We need to add two rows to not break the css-even-odd logic of the
-    result list.
-{% endcomment %}
-</tr>
-<tr class="item-message {{msg.tags}}" id="{{msg.id}}" {% for k, v in msg.extra_data.items %}data-{{k}}="{{v}}" {% endfor %}>
-    <td colspan={{colspan}}><div>{{msg.message}}</div></td>
-</tr>
-<tr class="empty">
+<div class="{{msg.tags}}" id="{{msg.id}}" {% for k, v in msg.extra_data.items %}data-{{k}}="{{v}}" {% endfor %}>
+    {{msg.message}}
+</div>

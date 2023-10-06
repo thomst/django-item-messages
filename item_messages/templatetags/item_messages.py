@@ -33,8 +33,14 @@ def item_messages_result_list(context, cl):
         # Else we render the messages html and append it to the item list.
         else:
             for msg in obj_messages.values():
-                context = dict(colspan=len(item), msg=msg)
-                msg_html = render_to_string('item_messages/item_message.html', context)
+                # Items are a list of table cells while their table row is set
+                # by the change_list_result template. Since we inject additional
+                # table rows to the list of table cells we start with a closing
+                # row tag and end with an opening one. And we need to add two
+                # rows to not break the css-even-odd logic of the result list.
+                msg_html = f'<td colspan={len(item)}>{msg.html}</td>'
+                msg_html = f'<tr class="item-message">{msg_html}</tr>'
+                msg_html = f'</tr>{msg_html}<tr class="empty">'
 
                 # Extend the item and add it to our items list.
                 item.append(mark_safe(msg_html))
