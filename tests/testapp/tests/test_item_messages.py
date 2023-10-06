@@ -73,8 +73,7 @@ class ItemMessagesTests(TestCase):
 
         obj = TestModel.objects.get(pk=1)
         model_key, obj_key = get_msg_path(obj)
-        obj_msgs = msgs[model_key][obj_key]
-        for msg in [m for m in obj_msgs.values()][3:]:
+        for msg in flatten_dict(msgs[model_key][obj_key])[3:]:
             url = url_pattern.format(msg_id=msg.id)
             data = dict(
                 message=f'[UPDATED] {msg.message}',

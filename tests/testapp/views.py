@@ -5,6 +5,7 @@ from django.views.decorators.http import require_POST
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from item_messages.storage.base import Message
 from item_messages import api
 from item_messages.constants import DEBUG
 from item_messages.constants import DEFAULT_TAGS
@@ -44,9 +45,9 @@ def update_message_view(request, msg_id):
     extra_data = request.POST.get('extra_data', None)
     update_message(request, msg_id, level, message, extra_tags, extra_data)
 
-    model_key, _, _ = msg_id.split(':')
-    app_label, _, model = model_key.split('.')
-    url = reverse(f'admin:{app_label}_{model.lower()}_changelist')
+    model_key, _, _ = msg_id.split(Message.id_separator)
+    ct = ContentType.objects.get_for_id(model_key)
+    url = reverse(f'admin:{ct.app_label}_{ct.model}_changelist')
     return HttpResponseRedirect(url)
 
 
