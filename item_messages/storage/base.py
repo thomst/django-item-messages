@@ -7,6 +7,9 @@ from ..utils import get_msg_key
 
 
 class Message(BaseMessage):
+    #: Separator character to build the message id.
+    id_separator = '_'
+
     def __init__(self, msg_key, model_key, obj_key, level, message, extra_tags="", extra_data=None):
         super().__init__(level, message, extra_tags)
         self.key = msg_key
@@ -16,7 +19,7 @@ class Message(BaseMessage):
 
     @property
     def id(self):
-        return f'{self.model_key}:{self.obj_key}:{self.key}'
+        return f'{self.model_key}{self.id_separator}{self.obj_key}{self.id_separator}{self.key}'
 
     @property
     def html(self):
@@ -107,7 +110,7 @@ class StorageMixin:
         Get either all or model specific or object specific messages.
         """
         if msg_id:
-            model_key, obj_key, msg_key = msg_id.split(':')
+            model_key, obj_key, msg_key = msg_id.split(Message.id_separator)
             try:
                 return self._loaded_messages.get(model_key, {}).get(obj_key, {})[msg_key]
             except KeyError:
@@ -125,7 +128,7 @@ class StorageMixin:
         _summary_
         """
         if msg_id:
-            model_key, obj_key, msg_key = msg_id.split(':')
+            model_key, obj_key, msg_key = msg_id.split(Message.id_separator)
             try:
                 del self._loaded_messages.get(model_key, {}).get(obj_key, {})[msg_key]
             except KeyError:
