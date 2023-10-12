@@ -3,6 +3,12 @@
     --message-success-bg-light: #e8ffe8;
     --message-warning-bg-light: #ffffe6;
     --message-error-bg-light: #fff6f6;
+    --message-font-color: #666;
+}
+
+tr.item-message
+{
+    color: var(--message-font-color);
 }
 
 /* Set standard background-color for messages using the background of the
