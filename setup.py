@@ -38,7 +38,8 @@ setup(
     url="https://github.com/thomst/django-item-messages",
     license="BSD License",
     platforms=["OS Independent"],
-    packages=find_namespace_packages(exclude=["tests"]),
+    packages=find_namespace_packages(exclude=["tests.*", "tests"]),
+    package_data={"item_messages": ["static/**", "templates/**"]},
     include_package_data=True,
     install_requires=[
         "Django>=2.2",
