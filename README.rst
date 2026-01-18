@@ -2,8 +2,8 @@
 Welcome to django-item-messages
 ===============================
 
-.. image:: https://github.com/thomst/django-item-messages/actions/workflows/ci.yml/badge.svg
-   :target: https://github.com/thomst/django-item-messages/actions/workflows/ci.yml
+.. image:: https://github.com/thomst/django-item-messages/actions/workflows/tests.yml/badge.svg
+   :target: https://github.com/thomst/django-item-messages/actions/workflows/tests.yml
    :alt: Run tests for django-item-messages
 
 .. image:: https://coveralls.io/repos/github/thomst/django-item-messages/badge.svg?branch=main
