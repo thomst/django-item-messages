@@ -7,6 +7,10 @@ from ..utils import get_msg_key
 
 
 class Message(BaseMessage):
+    """
+    _summary_
+    """
+
     #: Separator character to build the message id.
     id_separator = '_'
 
