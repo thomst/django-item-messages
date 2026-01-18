@@ -1,4 +1,4 @@
-name: Publish django-modeltree to pypi
+name: Publish django-item-messages to pypi
 
 on:
   # Runs on pushing tags
