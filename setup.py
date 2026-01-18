@@ -3,7 +3,7 @@
 import os
 from pathlib import Path
 from setuptools import setup
-from setuptools import find_namespace_packages
+from setuptools import find_packages
 
 
 def read(filename):
@@ -39,9 +39,9 @@ setup(
     url="https://github.com/thomst/django-item-messages",
     license="BSD License",
     platforms=["OS Independent"],
-    packages=find_namespace_packages(exclude=["tests.*", "tests"]),
-    package_data={"item_messages": ["static/**", "templates/**"]},
-    include_package_data=True,
+    packages=find_packages(include=['item_messages', 'item_messages.*']),
+    package_data={'item_messages': ['static/**', 'templates/**'],},
+    include_package_data=False,
     install_requires=[
         "Django>=2.2",
     ],
