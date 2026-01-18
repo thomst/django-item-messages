@@ -31,8 +31,9 @@ else:
 setup(
     name="django-item-messages",
     version=version,
-    description="TODO",
+    description="Render item specific messages in the changelist view of the Django admin backend.",
     long_description=read("README.rst"),
+    long_description_content_type="text/x-rst",
     author="Thomas Leichtfuß",
     author_email="thomas.leichtfuss@posteo.de",
     url="https://github.com/thomst/django-item-messages",
